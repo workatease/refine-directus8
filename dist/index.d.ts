@@ -1,3 +1,3 @@
 export * from "./dataProvider";
 export * from "./helpers";
-export * from "@directus/sdk";
+export * from "@directus/sdk-js";

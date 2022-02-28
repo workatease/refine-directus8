@@ -1,4 +1,4 @@
-export * from '@directus/sdk';
+export * from '@directus/sdk-js';
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
@@ -852,136 +852,56 @@ try {
 }
 });
 
-var operators = {
-  eq: "_eq",
-  ne: "_neq",
-  lt: "_lt",
-  gt: "_gt",
-  lte: "_lte",
-  gte: "_gte",
-  "in": "_in",
-  nin: "_nin",
-  contains: "_contains",
-  containss: undefined,
-  ncontains: "_ncontains",
-  ncontainss: undefined,
-  "null": "_null",
-  nnull: "_nnull",
-  between: "_between",
-  nbetween: "_nbetween"
-};
-
-var strToObj = function strToObj(str, val) {
-  var i,
-      obj = {},
-      strarr = str.split('.');
-  var x = obj;
-
-  for (i = 0; i < strarr.length - 1; i++) {
-    x = x[strarr[i]] = {};
-  }
-
-  x[strarr[i]] = val;
-  return obj;
-};
-
-var generateSort = function generateSort(sort) {
-  var _sort = [];
-
-  if (sort) {
-    sort.map(function (item) {
-      if (item.order) {
-        item.order === "desc" ? _sort.push("-" + item.field) : _sort.push("" + item.field);
-      }
-    });
-  }
-
-  return _sort;
-};
-
-var generateFilter = function generateFilter(filters) {
-  var queryFilters = {};
-  var search = '';
-
-  if (filters) {
-    queryFilters['_and'] = [];
-    filters.map(function (_ref) {
-      var field = _ref.field,
-          operator = _ref.operator,
-          value = _ref.value;
-
-      if (value) {
-        if (field === "search") {
-          search = value;
-        } else {
-          var directusOperator = operators[operator];
-          var queryField = field + "." + directusOperator;
-          var filterObj = strToObj(queryField, value);
-          queryFilters['_and'].push(filterObj);
-        }
-      }
-    });
-  }
-
-  return {
-    search: search,
-    filters: queryFilters
-  };
-};
-
 var dataProvider = function dataProvider(directusClient) {
   return {
     getList: function () {
       var _getList = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee(_ref2) {
-        var resource, pagination, filters, sort, metaData, current, pageSize, _sort, paramsFilters, sortString, directus, params, response;
-
+        var resource, pagination, metaData, current, pageSize, params, response;
         return runtime_1.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                resource = _ref2.resource, pagination = _ref2.pagination, filters = _ref2.filters, sort = _ref2.sort, metaData = _ref2.metaData;
+                resource = _ref2.resource, pagination = _ref2.pagination, metaData = _ref2.metaData;
                 current = (pagination == null ? void 0 : pagination.current) || 1;
-                pageSize = (pagination == null ? void 0 : pagination.pageSize) || 50;
-                _sort = generateSort(sort);
-                paramsFilters = generateFilter(filters);
-                sortString = sort && sort.length > 0 ? _sort.join(",") : '-date_created';
-                directus = directusClient.items(resource);
-                params = _extends({
-                  search: paramsFilters.search,
-                  filter: _extends({}, paramsFilters.filters, {
-                    status: {
-                      _neq: 'archived'
-                    }
-                  }),
+                pageSize = (pagination == null ? void 0 : pagination.pageSize) || 50; //    const _sort = generateSort(sort);
+                //    const paramsFilters = generateFilter(filters);
+                //   const sortString: any = sort && sort.length > 0 ? _sort.join(",") : '-date_created';
+
+                params = {
+                  // search: paramsFilters.search,
+                  // filter: {
+                  //     // ...paramsFilters.filters,
+                  //     status: { _neq: 'archived' }
+                  // },
                   meta: '*',
                   page: current,
                   limit: pageSize,
-                  sort: sortString,
-                  fields: ['*']
-                }, metaData);
-                _context.prev = 8;
-                _context.next = 11;
-                return directus.readMany(params);
+                  //sort: sortString,
+                  fields: ['*.*']
+                };
+                _context.prev = 4;
+                _context.next = 7;
+                return directusClient.getItems(resource, params);
 
-              case 11:
+              case 7:
                 response = _context.sent;
                 return _context.abrupt("return", {
                   data: response.data,
                   total: response.meta.filter_count
                 });
 
-              case 15:
-                _context.prev = 15;
-                _context.t0 = _context["catch"](8);
+              case 11:
+                _context.prev = 11;
+                _context.t0 = _context["catch"](4);
                 console.log(_context.t0);
                 throw new Error(_context.t0.errors && _context.t0.errors[0] && _context.t0.errors[0].message);
 
-              case 19:
+              case 15:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[8, 15]]);
+        }, _callee, null, [[4, 11]]);
       }));
 
       function getList(_x) {
@@ -992,13 +912,12 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     getMany: function () {
       var _getMany = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee2(_ref3) {
-        var resource, ids, metaData, directus, params, response;
+        var resource, ids, metaData, params, response;
         return runtime_1.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 resource = _ref3.resource, ids = _ref3.ids, metaData = _ref3.metaData;
-                directus = directusClient.items(resource);
                 params = _extends({
                   filter: {
                     id: {
@@ -1010,29 +929,29 @@ var dataProvider = function dataProvider(directusClient) {
                   },
                   fields: ['*']
                 }, metaData);
-                _context2.prev = 3;
-                _context2.next = 6;
-                return directus.readMany(params);
+                _context2.prev = 2;
+                _context2.next = 5;
+                return directusClient.getItems(resource, params);
 
-              case 6:
+              case 5:
                 response = _context2.sent;
                 return _context2.abrupt("return", {
                   data: response.data,
                   total: response.meta.filter_count
                 });
 
-              case 10:
-                _context2.prev = 10;
-                _context2.t0 = _context2["catch"](3);
+              case 9:
+                _context2.prev = 9;
+                _context2.t0 = _context2["catch"](2);
                 console.log(_context2.t0);
                 throw new Error(_context2.t0.errors && _context2.t0.errors[0] && _context2.t0.errors[0].message);
 
-              case 14:
+              case 13:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, null, [[3, 10]]);
+        }, _callee2, null, [[2, 9]]);
       }));
 
       function getMany(_x2) {
@@ -1043,36 +962,35 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     create: function () {
       var _create = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee3(_ref4) {
-        var resource, variables, metaData, directus, params, response;
+        var resource, variables, metaData, params, response;
         return runtime_1.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 resource = _ref4.resource, variables = _ref4.variables, metaData = _ref4.metaData;
-                directus = directusClient.items(resource);
                 params = _extends({}, variables, metaData);
-                _context3.prev = 3;
-                _context3.next = 6;
-                return directus.createOne(params);
+                _context3.prev = 2;
+                _context3.next = 5;
+                return directusClient.createItem(resource, params);
 
-              case 6:
+              case 5:
                 response = _context3.sent;
                 return _context3.abrupt("return", {
                   data: response.data
                 });
 
-              case 10:
-                _context3.prev = 10;
-                _context3.t0 = _context3["catch"](3);
+              case 9:
+                _context3.prev = 9;
+                _context3.t0 = _context3["catch"](2);
                 console.log(_context3.t0);
                 throw new Error(_context3.t0.errors && _context3.t0.errors[0] && _context3.t0.errors[0].message);
 
-              case 14:
+              case 13:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, null, [[3, 10]]);
+        }, _callee3, null, [[2, 9]]);
       }));
 
       function create(_x3) {
@@ -1083,36 +1001,35 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     update: function () {
       var _update = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee4(_ref5) {
-        var resource, id, variables, metaData, directus, params, response;
+        var resource, id, variables, metaData, params, response;
         return runtime_1.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 resource = _ref5.resource, id = _ref5.id, variables = _ref5.variables, metaData = _ref5.metaData;
-                directus = directusClient.items(resource);
                 params = _extends({}, variables, metaData);
-                _context4.prev = 3;
-                _context4.next = 6;
-                return directus.updateOne(id, params);
+                _context4.prev = 2;
+                _context4.next = 5;
+                return directusClient.updateItem(resource, id, params);
 
-              case 6:
+              case 5:
                 response = _context4.sent;
                 return _context4.abrupt("return", {
                   data: response.data
                 });
 
-              case 10:
-                _context4.prev = 10;
-                _context4.t0 = _context4["catch"](3);
+              case 9:
+                _context4.prev = 9;
+                _context4.t0 = _context4["catch"](2);
                 console.log(_context4.t0);
                 throw new Error(_context4.t0.errors && _context4.t0.errors[0] && _context4.t0.errors[0].message);
 
-              case 14:
+              case 13:
               case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4, null, [[3, 10]]);
+        }, _callee4, null, [[2, 9]]);
       }));
 
       function update(_x4) {
@@ -1123,36 +1040,18 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     updateMany: function () {
       var _updateMany = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee5(_ref6) {
-        var resource, ids, variables, metaData, directus, params, response;
         return runtime_1.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                resource = _ref6.resource, ids = _ref6.ids, variables = _ref6.variables, metaData = _ref6.metaData;
-                directus = directusClient.items(resource);
-                params = _extends({}, variables, metaData);
-                _context5.prev = 3;
-                _context5.next = 6;
-                return directus.updateMany(ids, params);
+                throw Error("'custom' method is not implemented on refine-directus8 data provider.");
 
-              case 6:
-                response = _context5.sent;
-                return _context5.abrupt("return", {
-                  data: response.data
-                });
-
-              case 10:
-                _context5.prev = 10;
-                _context5.t0 = _context5["catch"](3);
-                console.log(_context5.t0);
-                throw new Error(_context5.t0.errors && _context5.t0.errors[0] && _context5.t0.errors[0].message);
-
-              case 14:
+              case 2:
               case "end":
                 return _context5.stop();
             }
           }
-        }, _callee5, null, [[3, 10]]);
+        }, _callee5);
       }));
 
       function updateMany(_x5) {
@@ -1163,36 +1062,18 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     createMany: function () {
       var _createMany = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee6(_ref7) {
-        var resource, variables, metaData, directus, params, response;
         return runtime_1.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
-                resource = _ref7.resource, variables = _ref7.variables, metaData = _ref7.metaData;
-                directus = directusClient.items(resource);
-                params = _extends({}, variables, metaData);
-                _context6.prev = 3;
-                _context6.next = 6;
-                return directus.createMany(params);
+                throw Error("'custom' method is not implemented on refine-directus8 data provider.");
 
-              case 6:
-                response = _context6.sent;
-                return _context6.abrupt("return", {
-                  data: response.data
-                });
-
-              case 10:
-                _context6.prev = 10;
-                _context6.t0 = _context6["catch"](3);
-                console.log(_context6.t0);
-                throw new Error(_context6.t0.errors && _context6.t0.errors[0] && _context6.t0.errors[0].message);
-
-              case 14:
+              case 2:
               case "end":
                 return _context6.stop();
             }
           }
-        }, _callee6, null, [[3, 10]]);
+        }, _callee6);
       }));
 
       function createMany(_x6) {
@@ -1203,36 +1084,35 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     getOne: function () {
       var _getOne = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee7(_ref8) {
-        var resource, id, metaData, directus, params, response;
+        var resource, id, metaData, params, response;
         return runtime_1.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
               case 0:
                 resource = _ref8.resource, id = _ref8.id, metaData = _ref8.metaData;
-                directus = directusClient.items(resource);
                 params = _extends({}, metaData);
-                _context7.prev = 3;
-                _context7.next = 6;
-                return directus.readOne(id, params);
+                _context7.prev = 2;
+                _context7.next = 5;
+                return directusClient.getItem(resource, id, params);
 
-              case 6:
+              case 5:
                 response = _context7.sent;
                 return _context7.abrupt("return", {
                   data: response.data
                 });
 
-              case 10:
-                _context7.prev = 10;
-                _context7.t0 = _context7["catch"](3);
+              case 9:
+                _context7.prev = 9;
+                _context7.t0 = _context7["catch"](2);
                 console.log(_context7.t0);
                 throw new Error(_context7.t0.errors && _context7.t0.errors[0] && _context7.t0.errors[0].message);
 
-              case 14:
+              case 13:
               case "end":
                 return _context7.stop();
             }
           }
-        }, _callee7, null, [[3, 10]]);
+        }, _callee7, null, [[2, 9]]);
       }));
 
       function getOne(_x7) {
@@ -1243,35 +1123,34 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     deleteOne: function () {
       var _deleteOne = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee8(_ref9) {
-        var resource, id, directus, response;
+        var resource, id, response;
         return runtime_1.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
                 resource = _ref9.resource, id = _ref9.id;
-                directus = directusClient.items(resource);
-                _context8.prev = 2;
-                _context8.next = 5;
-                return directus.deleteOne(id);
+                _context8.prev = 1;
+                _context8.next = 4;
+                return directusClient.deleteItem(resource, id);
 
-              case 5:
+              case 4:
                 response = _context8.sent;
                 return _context8.abrupt("return", {
                   data: response.data
                 });
 
-              case 9:
-                _context8.prev = 9;
-                _context8.t0 = _context8["catch"](2);
+              case 8:
+                _context8.prev = 8;
+                _context8.t0 = _context8["catch"](1);
                 console.log(_context8.t0);
                 throw new Error(_context8.t0.errors && _context8.t0.errors[0] && _context8.t0.errors[0].message);
 
-              case 13:
+              case 12:
               case "end":
                 return _context8.stop();
             }
           }
-        }, _callee8, null, [[2, 9]]);
+        }, _callee8, null, [[1, 8]]);
       }));
 
       function deleteOne(_x8) {
