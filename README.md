@@ -1,5 +1,6 @@
-# refine-directus
-[**Directus**](https://directus.io/) dataprovider package for refine.
+# refine-directus8
+[**Directus 8**](https://directus.io/) dataprovider package for refine.
+This is still in Beta Testing and is not yet ready for use.
 
 ## About
 
@@ -12,5 +13,5 @@ For more detailed information and usage, refer to the [refine data provider docu
 ## Install
 
 ```
-npm install @tspvivek/refine-directus
+npm install @workatease/refine-directus8
 ```
