@@ -1,5 +1,5 @@
 # refine-directus8
-[**Directus 8**](https://directus.io/) dataprovider package for refine.
+[**Directus 8**](https://v8.docs.directus.io/) dataprovider package for refine.
 This is still in Beta Testing and is not yet ready for use.
 
 ## About
@@ -10,8 +10,13 @@ This is still in Beta Testing and is not yet ready for use.
 
 For more detailed information and usage, refer to the [refine data provider documentation](https://refine.dev/docs/core/providers/data-provider).
 
+# Features
+- Data Provider
+- Auth Provider
+
 ## Install
 
 ```
 npm install @workatease/refine-directus8
 ```
+

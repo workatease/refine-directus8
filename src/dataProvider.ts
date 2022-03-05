@@ -106,7 +106,10 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
         catch (e) {
             console.log(e);
-            throw new Error(e.errors && e.errors[0] && e.errors[0].message);
+            if (e instanceof Error) {
+                throw e;
+            }
+            throw new Error("unable to get list");
         }
     },
 
@@ -132,7 +135,10 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
         catch (e) {
             console.log(e);
-            throw new Error(e.errors && e.errors[0] && e.errors[0].message);
+            if (e instanceof Error) {
+                throw e;
+            }
+            throw new Error("unable to get Many");
         }
     },
 
@@ -153,7 +159,10 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
         catch (e) {
             console.log(e);
-            throw new Error(e.errors && e.errors[0] && e.errors[0].message);
+            if (e instanceof Error) {
+                throw e;
+            }
+            throw new Error("unable to create");
         }
     },
 
@@ -174,7 +183,10 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
         catch (e) {
             console.log(e);
-            throw new Error(e.errors && e.errors[0] && e.errors[0].message);
+            if (e instanceof Error) {
+                throw e;
+            }
+            throw new Error("unable to update");
         }
     },
 
@@ -226,7 +238,10 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
         catch (e) {
             console.log(e);
-            throw new Error(e.errors && e.errors[0] && e.errors[0].message);
+            if (e instanceof Error) {
+                throw e;
+            }
+            throw new Error("unable to get One");
         }
     },
 
@@ -242,7 +257,10 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
         catch (e) {
             console.log(e);
-            throw new Error(e.errors && e.errors[0] && e.errors[0].message);
+            if (e instanceof Error) {
+                throw e;
+            }
+            throw new Error("unable to delete One");
         }
     },
 
@@ -258,16 +276,21 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
         catch (e) {
             console.log(e);
-            throw new Error(e.errors && e.errors[0] && e.errors[0].message);
+            if (e instanceof Error) {
+                throw e;
+            }
+            throw new Error("unable to delete Many");
         }
     },
 
     getApiUrl: () => {
-        return directusClient.getUrl();
+        throw Error(
+            "'custom' method is not implemented on refine-directus8 data provider.",
+        );
     },
 
     custom: async ({ url, method, filters, sort, payload, query, headers }) => {
-
+        // TODO : implement custom method
         const directusTransport = directusClient.transport;
 
         let response: any;
