@@ -284,9 +284,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
     },
 
     getApiUrl: () => {
-        throw Error(
-            "'custom' method is not implemented on refine-directus8 data provider.",
-        );
+        return directusClient.config.url;
     },
 
     custom: async ({ url, method, filters, sort, payload, query, headers }) => {
