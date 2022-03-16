@@ -1,24 +1,7 @@
-import { CrudFilters, CrudSorting, DataProvider } from "@pankod/refine-core";
+import { FilterOperator } from "@directus/sdk-js/dist/types/schemes/http/Filter";
+import { QueryParams } from "@directus/sdk-js/dist/types/schemes/http/Query";
+import { CrudFilters, CrudOperators, CrudSorting, DataProvider } from "@pankod/refine-core";
 
-
-const operators = {
-    eq: "_eq",
-    ne: "_neq",
-    lt: "_lt",
-    gt: "_gt",
-    lte: "_lte",
-    gte: "_gte",
-    in: "_in",
-    nin: "_nin",
-    contains: "_contains",
-    containss: undefined,
-    ncontains: "_ncontains",
-    ncontainss: undefined,
-    null: "_null",
-    nnull: "_nnull",
-    between: "_between",
-    nbetween: "_nbetween",
-};
 
 
 const strToObj = (str: string, val: any) => {
@@ -47,29 +30,47 @@ const generateSort = (sort?: CrudSorting) => {
     return _sort;
 };
 
+const mapOperator = (operator: CrudOperators): FilterOperator => {
+    switch (operator) {
+        case "eq":
+        case "null":
+        case "nnull":
+        case "lt":
+        case "gt":
+        case "lte":
+        case "gte":
+        case "in":
+        case "nin":
+        case "between":
+        case "nbetween":
+            return operator;
+        case "contains":
+        case "containss":
+            return "contains";
+        case "ne":
+            return "neq"
+        case "ncontains":
+        case "ncontainss":
+            return "ncontains";
+    }
+};
+
 const generateFilter = (filters?: CrudFilters) => {
-    const queryFilters: { [key: string]: any } = {};
+    const queryFilters: {
+        [field: string]: { [operator in FilterOperator]?: any };
+    } = {};
+
     let search: string = '';
     if (filters) {
-        queryFilters['_and'] = [];
         filters.map(({ field, operator, value }) => {
-            if (value) {
-                if (field === "search") {
-                    search = value;
-                }
-                else {
-                    const directusOperator = operators[operator];
-                    let queryField = `${field}.${directusOperator}`;
-                    let filterObj = strToObj(queryField, value);
-
-                    queryFilters['_and'].push(filterObj);
-                }
-            }
+            console.log(field, operator, value);
+            var obj = { [`${mapOperator(operator)}`]: value }
+            queryFilters[`${field}`] = obj;
         });
     }
-
-    return { search: search, filters: queryFilters };
-};
+    console.log(queryFilters);
+    return queryFilters;
+}
 
 export const dataProvider = (directusClient: any): DataProvider => ({
     getList: async ({ resource, pagination, filters, sort, metaData }) => {
@@ -78,19 +79,20 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         const pageSize = pagination?.pageSize || 50;
 
         //    const _sort = generateSort(sort);
-        //    const paramsFilters = generateFilter(filters);
+        const paramsFilters = generateFilter(filters);
 
         //   const sortString: any = sort && sort.length > 0 ? _sort.join(",") : '-date_created';
 
-
-        let params: any = {
+        console.log('getList', filters, sort, metaData);
+        let params: QueryParams = {
+            filter: paramsFilters,
             // search: paramsFilters.search,
             // filter: {
             //     // ...paramsFilters.filters,
             //     status: { _neq: 'archived' }
             // },
             meta: '*',
-            page: current,
+            offset: (current - 1) * pageSize,
             limit: pageSize,
             //sort: sortString,
             fields: ['*.*']
@@ -284,6 +286,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
     },
 
     getApiUrl: () => {
+
         return directusClient.config.url;
     },
 
