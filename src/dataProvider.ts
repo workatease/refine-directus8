@@ -247,15 +247,35 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
     },
 
-    deleteOne: async ({ resource, id }) => {
+    deleteOne: async ({ resource, id, metaData }) => {
 
 
         try {
-            const response: any = await directusClient.deleteItem(resource, id);
+            if (metaData && metaData.softDelete) {
+                delete metaData.softDelete;
+                let params: any = {}
+                if (metaData) {
+                    params = {
+                        ...metaData
+                    }
+                } else {
+                    // if metaData is empty, then we need to set status to archived default behaviour
+                    params = {
+                        status: 'archived'
+                    }
+                }
+                const response: any = await directusClient.updateItem(resource, id, params);
+                return {
+                    data: response.data
+                };
+            } else {
+                const response: any = await directusClient.deleteItem(resource, id);
 
-            return {
-                data: response.data
-            };
+                return {
+                    data: response.data
+                };
+            }
+
         }
         catch (e) {
             console.log(e);
@@ -270,6 +290,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         const directus = directusClient.items(resource);
 
         try {
+
             const response: any = await directus.deleteMany(ids);
 
             return {

@@ -20,3 +20,7 @@ For more detailed information and usage, refer to the [refine data provider docu
 npm install @workatease/refine-directus8
 ```
 
+## Notes
+
+To enable perform archive instead of delete with [**DeleteButton**](https://refine.dev/docs/ui-frameworks/antd/components/buttons/delete-button/#api-reference) pass metaData={softDelete:true,field:'value'} in DeleteButton
+if no field is passed then default status will be used and set to archive
