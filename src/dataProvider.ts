@@ -98,9 +98,11 @@ export const dataProvider = (directusClient: any): DataProvider => ({
             meta: '*',
             offset: (current - 1) * pageSize,
             limit: pageSize,
-            sort: sortString,
             fields: ['*.*']
         };
+        if (sortString !== '') {
+            params.sort = sortString;
+        }
 
         try {
             const response: any = await directusClient.getItems(resource, params);
