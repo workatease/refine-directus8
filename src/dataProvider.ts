@@ -65,7 +65,11 @@ const generateFilter = (filters?: CrudFilters) => {
         filters.map(({ field, operator, value }) => {
             console.log(field, operator, value);
             var obj = { [`${mapOperator(operator)}`]: value }
-            queryFilters[`${field}`] = obj;
+            if (queryFilters[`${field}`]) {
+                queryFilters[`${field}`] = { ...queryFilters[`${field}`], ...obj }
+            } else {
+                queryFilters[`${field}`] = obj;
+            }
         });
     }
     console.log(queryFilters);
@@ -78,10 +82,10 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         const current = pagination?.current || 1;
         const pageSize = pagination?.pageSize || 50;
 
-        //    const _sort = generateSort(sort);
+        const _sort = generateSort(sort);
         const paramsFilters = generateFilter(filters);
 
-        //   const sortString: any = sort && sort.length > 0 ? _sort.join(",") : '-date_created';
+        const sortString: any = sort && sort.length > 0 ? _sort.join(",") : '-date_created';
 
         console.log('getList', filters, sort, metaData);
         let params: QueryParams = {
@@ -94,7 +98,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
             meta: '*',
             offset: (current - 1) * pageSize,
             limit: pageSize,
-            //sort: sortString,
+            sort: sortString,
             fields: ['*.*']
         };
 
