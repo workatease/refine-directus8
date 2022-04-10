@@ -85,7 +85,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         const _sort = generateSort(sort);
         const paramsFilters = generateFilter(filters);
 
-        const sortString: any = sort && sort.length > 0 ? _sort.join(",") : '-date_created';
+        const sortString: any = sort && sort.length > 0 ? _sort.join(",") : '';
 
         console.log('getList', filters, sort, metaData);
         let params: QueryParams = {
