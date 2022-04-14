@@ -63,7 +63,7 @@ const generateFilter = (filters?: CrudFilters) => {
     let search: string = '';
     if (filters) {
         filters.map(({ field, operator, value }) => {
-            console.log(field, operator, value);
+
             var obj = { [`${mapOperator(operator)}`]: value }
             if (queryFilters[`${field}`]) {
                 queryFilters[`${field}`] = { ...queryFilters[`${field}`], ...obj }
@@ -72,7 +72,7 @@ const generateFilter = (filters?: CrudFilters) => {
             }
         });
     }
-    console.log(queryFilters);
+
     return queryFilters;
 }
 
@@ -87,7 +87,6 @@ export const dataProvider = (directusClient: any): DataProvider => ({
 
         const sortString: any = sort && sort.length > 0 ? _sort.join(",") : '';
 
-        console.log('getList', filters, sort, metaData);
         let params: QueryParams = {
             filter: paramsFilters,
             // search: paramsFilters.search,
@@ -198,35 +197,44 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
     },
 
-    updateMany: async ({ resource, ids, variables, metaData }) => {
+    updateMany: async ({ resource, ids, variables }) => {
 
-        throw Error(
-            "'custom' method is not implemented on refine-directus8 data provider.",
-        );
+        let params = ids.map(id => {
+            return {
+                id,
+                ...variables
+            }
+        });
 
-        // let params: any = {
-        //     ...variables,
-        //     ...metaData
-        // };
+        try {
+            const response: any = await directusClient.updateItems(resource, params);
 
-        // try {
-        //     const response: any = await directusClient.updateItems(resource,ids, params);
-
-        //     return {
-        //         data: response.data
-        //     };
-        // }
-        // catch (e) {
-        //     console.log(e);
-        //     throw new Error(e.errors && e.errors[0] && e.errors[0].message);
-        // }
+            return {
+                data: response.data
+            };
+        }
+        catch (e) {
+            console.log(e);
+            if (e instanceof Error) {
+                throw e;
+            }
+            throw new Error("unable to updateMany");
+        }
     },
 
-    createMany: async ({ resource, variables, metaData }) => {
+    createMany: async ({ resource, variables }) => {
 
-        throw Error(
-            "'custom' method is not implemented on refine-directus8 data provider.",
-        );
+        try {
+            const response: any = await directusClient.createItems(resource, variables);
+
+            return {
+                data: response.data
+            };
+        }
+        catch (e) {
+            console.log(e);
+            throw new Error(e.errors && e.errors[0] && e.errors[0].message);
+        }
 
     },
 
