@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@directus/sdk-js": "^6.3.0",
-    "@pankod/refine-core": "^3.2.0"
+    "@pankod/refine-core": "^3.103.0"
   },
   "publishConfig": {
     "access": "public"
